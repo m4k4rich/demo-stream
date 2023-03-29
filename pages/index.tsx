@@ -20,25 +20,20 @@ export default function Home() {
 	const videos = 
 	[
         {
-            name: 'Video 1',
-            thumbnail: 'https://example.com/video1-thumbnail.jpg',
-            videoUrl: 'https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8'
+            name: 'Первое демо видео 1',
+            thumbnail: 'http://mts.alobanov.space/1.png',
+            videoUrl: 'http://mts.alobanov.space/1.mp4'
         },
         {
-            name: 'Video 2',
-            thumbnail: 'https://example.com/video2-thumbnail.jpg',
-            videoUrl: 'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.mp4/.m3u8'
+            name: 'Первой демо видео 2',
+            thumbnail: 'http://mts.alobanov.space/2.png',
+            videoUrl: 'http://mts.alobanov.space/2.mp4'
 		},
-		        {
-            name: 'Video 1',
-            thumbnail: 'https://example.com/video1-thumbnail.jpg',
-            videoUrl: 'https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_fmp4/master.m3u8'
+		{
+            name: 'Первой демо видео 3',
+            thumbnail: 'http://mts.alobanov.space/1.png',
+            videoUrl: 'http://mts.alobanov.space/2.mp4'
         },
-        {
-            name: 'Video 2',
-            thumbnail: 'https://example.com/video2-thumbnail.jpg',
-            videoUrl: 'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8'
-		},
 	]
 
 	useEffect(() => {
@@ -129,7 +124,7 @@ export default function Home() {
 						<h2 className={inter.className}>
 						{video.name} <span>-&gt;</span>
 						</h2>
-						<img src={'https://picsum.photos/200/300/?blur'} height='200px' width='100px' />
+						<img src={video.thumbnail} width='250px' />
 						<p className={inter.className}>
 						Find in-depth information about Next.js features and&nbsp;API.
 						</p>
