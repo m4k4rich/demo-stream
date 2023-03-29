@@ -1,20 +1,23 @@
 import Head from 'next/head'
 import Image from 'next/image'
-import React, { useState } from "react";
+import React, { useState, useEffect} from "react";
 import { Inter } from 'next/font/google'
 import styles from '@/styles/Home.module.css'
 import dynamic from 'next/dynamic'
 const ReactPlayer = dynamic(() => import("react-player"), { ssr: false });
+import { FileRejection, useDropzone } from 'react-dropzone';
 import logo from './main.png';
 
 
 const inter = Inter({ subsets: ['latin'] })
 
 export default function Home() {
+	
 	const [url, setUrl] = useState("");
-	const [selectedVideo, setSelectedVideo] = useState(null)
-
-    const videos = 
+	const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  	const [isLoading, setIsLoading] = useState<boolean>(false);
+	const [token, setToken] = useState<string>("");
+	const videos = 
 	[
         {
             name: 'Video 1',
@@ -38,7 +41,64 @@ export default function Home() {
 		},
 	]
 
+	useEffect(() => {
+		console.log('useeffect')
+		getToken();
+	  }, []);
 
+	const handleFileChange = (event:any) => {
+	  console.log(event.target.files[0]);
+	  const file = event.target.files[0];
+	  setSelectedFile(file);
+	};
+	
+	const getToken = async () => {
+	  try {
+		const response = await fetch('http://mts.alobanov.space:8000/token');
+  
+		if (!response.ok) {
+		  throw new Error('Failed to get token from server');
+		}
+  
+		const token = await response.text();
+		setToken(token);
+		console.log(token)
+		console.log('hello')
+	  } catch (error) {
+		console.error(error);
+		setToken("");
+	  }
+	};
+
+	const handleUploadClick = async () => {
+		if (selectedFile) {
+		  setIsLoading(true);
+	
+		  const formData = new FormData();
+		  formData.append('token', "7f52f208549947b96bfdc2ca6bcbef59");
+		  console.log(selectedFile);
+		  formData.append('video', selectedFile);
+		  
+		  try {
+			const response = await fetch('http://mts.alobanov.space:8000/from-video', {
+			  method: 'POST',
+			  body: formData,
+			});
+	
+			// convert the response blob to a temporary URL
+			const videoBlob = await response.blob();
+			const url = URL.createObjectURL(videoBlob);
+			setUrl(url);
+		  } catch (error) {
+			// handle network error
+			console.error('Network error:', error);
+		  }
+	
+		  setIsLoading(false);
+		}
+	};
+	
+  
 	const handleUrlChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 	  setUrl(event.target.value);
 	};
@@ -47,8 +107,8 @@ export default function Home() {
 		console.log(url)
 	}
 
-	function handleVideoClick(video: string){
-		console.log(video);
+	const downloadVideo = (event: any) => {
+		console.log(url)
 	}
 
 	function changeFirstParam(someParam: string) {
@@ -57,10 +117,6 @@ export default function Home() {
 
 	function changeUrl(newUrl: string){
 		setUrl(newUrl)
-	}
-
-	function changeSecondParam(someParam: string) {
-		console.log(someParam)
 	}
 
 	const listItems = videos.map(video =>
@@ -84,19 +140,6 @@ export default function Home() {
 		console.log(url)
 	}
 
-	const handleApiRequest = () => {
-	  console.log(url)
-	  fetch("https://api.example.com/my-endpoint", {
-		method: "POST",
-		body: JSON.stringify({ url }),
-		headers: {
-		  "Content-Type": "application/json"
-		}
-	  })
-		.then(response => response.json())
-		.then(data => console.log(data))
-		.catch(error => console.error(error));
-	};
   return (
     <>
       <Head>
@@ -111,6 +154,7 @@ export default function Home() {
 			<div>
 				<ul>{listItems}</ul>
 			</div>
+			
 			<div>
 					<div className={styles.gridtop}>
 
@@ -124,12 +168,16 @@ export default function Home() {
 							/>
 						</div>
 
-						<button className={styles.button} type="button" onClick={sendRequest}>
-						Загрузить
-						</button>
-
 					</div>
 
+					<div className={styles.gridtop}>
+						<form>
+							<input className={styles.buttoncard} type="file" onChange={handleFileChange} />
+						</form>
+						<button className={styles.buttoncard} onClick={handleUploadClick}>
+							{isLoading ? 'Uploading...' : 'Обработать видео'}
+						</button>
+					</div>
 					<div className={styles.gridmiddle}>
 
 						<button
@@ -145,14 +193,15 @@ export default function Home() {
 						<button
 						className={styles.buttoncard}
 						type="button"
-						onClick={() => changeSecondParam('женский')}
+						onClick={() => changeFirstParam('женский')}
 						>
 									<h2 className={inter.className}>
-									Мужской голос
+									Женский голос
 									</h2>
 						</button>
 
 					</div>
+
 				<div className={styles.gridvideo}>
 				<ReactPlayer 
 				playing 
